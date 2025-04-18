@@ -40,6 +40,12 @@ public class User {
     @NotNull(message = "Date of birth cannot be null")
     private Date dateOfBirth;
 
+    @NotBlank(message = "Employee ID cannot be blank")
+    private String employeeId;
+
+    @ManyToOne
+    private Company company;
+
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
