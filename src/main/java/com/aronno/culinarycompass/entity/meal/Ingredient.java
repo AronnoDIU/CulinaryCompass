@@ -1,5 +1,6 @@
-package com.aronno.culinarycompass.entity;
+package com.aronno.culinarycompass.entity.meal;
 
+import com.aronno.culinarycompass.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;

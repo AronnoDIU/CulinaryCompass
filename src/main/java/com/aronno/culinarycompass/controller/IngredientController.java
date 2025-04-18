@@ -1,6 +1,6 @@
 package com.aronno.culinarycompass.controller;
 
-import com.aronno.culinarycompass.entity.Ingredient;
+import com.aronno.culinarycompass.entity.meal.Ingredient;
 import com.aronno.culinarycompass.service.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

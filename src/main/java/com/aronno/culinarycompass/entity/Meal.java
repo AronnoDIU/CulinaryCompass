@@ -1,7 +1,11 @@
 package com.aronno.culinarycompass.entity;
 
+import com.aronno.culinarycompass.entity.meal.Ingredient;
+import com.aronno.culinarycompass.entity.status.History;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Where;
+
 import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.util.Set;
@@ -17,9 +21,18 @@ public class Meal {
     @ManyToMany
     private Set<Ingredient> ingredients;
     private BigDecimal totalCost;
+
     @ManyToOne
     private User user;
-    private String status; // PENDING, APPROVED, REJECTED
+
     @ManyToOne
     private Company company;
+
+    @ManyToOne
+    private Status status;
+
+    @OneToMany(mappedBy = "entityId")
+    @Where(clause = "entityType = 'MEAL'")
+    @OrderBy("createdAt DESC")
+    private Set<History> statusHistory;
 }
