@@ -38,14 +38,17 @@ CulinaryCompass is an intelligent meal management system that streamlines the pr
 
 ## 🛠️ Tech Stack
 
-- Java 24
-- Spring Boot 3.2.3
+- Java 17
+- Spring Boot 3.2.9
 - Spring MVC
 - Spring Data JPA
 - Jakarta EE
 - Lombok
+- JWT Authentication
 - Transactional Support
 - Validation Framework
+- Rate Limiting (Bucket4j)
+- Caching (Caffeine)
 
 ## 🔧 Core Components
 
@@ -61,8 +64,9 @@ CulinaryCompass is an intelligent meal management system that streamlines the pr
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Java 24 or higher
-- Maven
+- Java 17 or higher
+- Maven 3.6+
+- MySQL Database
 - Your preferred IDE (IntelliJ IDEA recommended)
 
 ### Installation
