@@ -48,11 +48,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
-        if (user.getPassword() == null) {
-            return ResponseEntity.status(400).body(null);
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            return ResponseEntity.badRequest().build();
         }
         User createdUser = userService.createUser(user);
-        return ResponseEntity.status(201).body(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PostMapping("/login")

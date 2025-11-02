@@ -16,6 +16,13 @@ import java.util.List;
 
 @Service
 public class MealService {
+    private static final String ENTITY_TYPE_MEAL = "MEAL";
+    private static final String STATUS_PENDING = "PENDING";
+    private static final String STATUS_APPROVED = "APPROVED";
+    private static final String STATUS_REJECTED = "REJECTED";
+    private static final String MEAL_CREATED_MESSAGE = "Meal created";
+    private static final String MEAL_UPDATED_MESSAGE = "Meal updated";
+    
     private final MealRepository mealRepository;
     private final StatusService statusService;
     private final StatusRepository statusRepository;
@@ -31,29 +38,34 @@ public class MealService {
     @Transactional
     public Meal createMeal(Meal meal, User currentUser) {
         Status pendingStatus = statusRepository
-            .findByNameAndCategory("PENDING", "MEAL")
-            .orElseThrow(() -> new ResourceNotFoundException("Status PENDING not found for category MEAL"));
+            .findByNameAndCategory(STATUS_PENDING, ENTITY_TYPE_MEAL)
+            .orElseThrow(() -> new ResourceNotFoundException("Status " + STATUS_PENDING + " not found for category " + ENTITY_TYPE_MEAL));
         
         meal.setStatus(pendingStatus);
         calculateTotalCost(meal);
         Meal savedMeal = mealRepository.save(meal);
         
         statusService.updateEntityStatus(
-            "MEAL",
+            ENTITY_TYPE_MEAL,
             savedMeal.getId(),
             pendingStatus,
             currentUser,
-            "Meal created"
+            MEAL_CREATED_MESSAGE
         );
         
         return savedMeal;
     }
 
     private void calculateTotalCost(Meal meal) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-        for (Ingredient ingredient : meal.getIngredients()) {
-            totalCost = totalCost.add(ingredient.getPrice());
+        if (meal.getIngredients() == null || meal.getIngredients().isEmpty()) {
+            meal.setTotalCost(BigDecimal.ZERO);
+            return;
         }
+        
+        BigDecimal totalCost = meal.getIngredients().stream()
+            .map(Ingredient::getPrice)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
         meal.setTotalCost(totalCost);
     }
 
@@ -63,14 +75,14 @@ public class MealService {
             .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
             
         Status approvedStatus = statusRepository
-            .findByNameAndCategory("APPROVED", "MEAL")
-            .orElseThrow(() -> new ResourceNotFoundException("Status APPROVED not found for category MEAL"));
+            .findByNameAndCategory(STATUS_APPROVED, ENTITY_TYPE_MEAL)
+            .orElseThrow(() -> new ResourceNotFoundException("Status " + STATUS_APPROVED + " not found for category " + ENTITY_TYPE_MEAL));
             
         meal.setStatus(approvedStatus);
         Meal savedMeal = mealRepository.save(meal);
         
         statusService.updateEntityStatus(
-            "MEAL",
+            ENTITY_TYPE_MEAL,
             savedMeal.getId(),
             approvedStatus,
             admin,
@@ -93,14 +105,14 @@ public class MealService {
             .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
         Status rejectedStatus = statusRepository
-            .findByNameAndCategory("REJECTED", "MEAL")
-            .orElseThrow(() -> new ResourceNotFoundException("Status REJECTED not found for category MEAL"));
+            .findByNameAndCategory(STATUS_REJECTED, ENTITY_TYPE_MEAL)
+            .orElseThrow(() -> new ResourceNotFoundException("Status " + STATUS_REJECTED + " not found for category " + ENTITY_TYPE_MEAL));
 
         meal.setStatus(rejectedStatus);
         Meal savedMeal = mealRepository.save(meal);
 
         statusService.updateEntityStatus(
-            "MEAL",
+            ENTITY_TYPE_MEAL,
             savedMeal.getId(),
             rejectedStatus,
             admin,
@@ -114,7 +126,7 @@ public class MealService {
         Meal meal = mealRepository.findById(mealId)
             .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
-        return statusService.getEntityStatusHistory("MEAL", meal.getId());
+        return statusService.getEntityStatusHistory(ENTITY_TYPE_MEAL, meal.getId());
     }
 
     public List<Meal> getUserScheduledMeals(Long id, String month) {
@@ -134,11 +146,11 @@ public class MealService {
         Meal updatedMeal = mealRepository.save(meal);
 
         statusService.updateEntityStatus(
-            "MEAL",
+            ENTITY_TYPE_MEAL,
             updatedMeal.getId(),
             updatedMeal.getStatus(),
             currentUser,
-            "Meal updated"
+            MEAL_UPDATED_MESSAGE
         );
 
         return updatedMeal;
