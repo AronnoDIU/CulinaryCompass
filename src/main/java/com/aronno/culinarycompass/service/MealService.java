@@ -4,6 +4,7 @@ import com.aronno.culinarycompass.entity.Meal;
 import com.aronno.culinarycompass.entity.Status;
 import com.aronno.culinarycompass.entity.User;
 import com.aronno.culinarycompass.entity.meal.Ingredient;
+import com.aronno.culinarycompass.exceptions.ResourceNotFoundException;
 import com.aronno.culinarycompass.repository.MealRepository;
 import com.aronno.culinarycompass.repository.StatusRepository;
 import jakarta.validation.Valid;
@@ -31,7 +32,7 @@ public class MealService {
     public Meal createMeal(Meal meal, User currentUser) {
         Status pendingStatus = statusRepository
             .findByNameAndCategory("PENDING", "MEAL")
-            .orElseThrow(() -> new RuntimeException("Status not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Status PENDING not found for category MEAL"));
         
         meal.setStatus(pendingStatus);
         calculateTotalCost(meal);
@@ -59,11 +60,11 @@ public class MealService {
     @Transactional
     public Meal approveMeal(Long mealId, User admin, String comments) {
         Meal meal = mealRepository.findById(mealId)
-            .orElseThrow(() -> new RuntimeException("Meal not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
             
         Status approvedStatus = statusRepository
             .findByNameAndCategory("APPROVED", "MEAL")
-            .orElseThrow(() -> new RuntimeException("Status not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Status APPROVED not found for category MEAL"));
             
         meal.setStatus(approvedStatus);
         Meal savedMeal = mealRepository.save(meal);
@@ -89,11 +90,11 @@ public class MealService {
 
     public Meal rejectMeal(Long mealId, User admin, String reason) {
         Meal meal = mealRepository.findById(mealId)
-            .orElseThrow(() -> new RuntimeException("Meal not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
         Status rejectedStatus = statusRepository
             .findByNameAndCategory("REJECTED", "MEAL")
-            .orElseThrow(() -> new RuntimeException("Status not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Status REJECTED not found for category MEAL"));
 
         meal.setStatus(rejectedStatus);
         Meal savedMeal = mealRepository.save(meal);
@@ -111,7 +112,7 @@ public class MealService {
 
     public Object getMealStatusHistory(Long mealId) {
         Meal meal = mealRepository.findById(mealId)
-            .orElseThrow(() -> new RuntimeException("Meal not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
         return statusService.getEntityStatusHistory("MEAL", meal.getId());
     }
@@ -123,7 +124,7 @@ public class MealService {
 
     public Meal updateMeal(Long mealId, @Valid Meal mealDetails, User currentUser) {
         Meal meal = mealRepository.findById(mealId)
-            .orElseThrow(() -> new RuntimeException("Meal not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
         meal.setName(mealDetails.getName());
         meal.setScheduledDate(mealDetails.getScheduledDate());
@@ -145,7 +146,7 @@ public class MealService {
 
     public boolean isMealOwner(Long mealId, Long userId) {
         Meal meal = mealRepository.findById(mealId)
-                .orElseThrow(() -> new RuntimeException("Meal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Meal not found with id: " + mealId));
 
         return meal.getUser().getId().equals(userId);
     }

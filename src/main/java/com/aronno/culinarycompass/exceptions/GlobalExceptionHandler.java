@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.sql.Date;
+import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
         errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
         errorObject.setMessage(ex.getMessage());
-        errorObject.setTimestamp(Date.valueOf(java.time.LocalDate.now()));
+        errorObject.setTimestamp(new Date());
 
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
         errorObject.setStatusCode(HttpStatus.CONFLICT.value());
         errorObject.setMessage(ex.getMessage());
-        errorObject.setTimestamp(Date.valueOf(java.time.LocalDate.now()));
+        errorObject.setTimestamp(new Date());
 
         return new ResponseEntity<>(errorObject, HttpStatus.CONFLICT);
     }
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
         errorObject.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorObject.setMessage("Invalid argument type: " + ex.getValue());
-        errorObject.setTimestamp(Date.valueOf(java.time.LocalDate.now()));
+        errorObject.setTimestamp(new Date());
 
         return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
     }
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
 
         errorObject.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorObject.setMessage(ex.getMessage());
-        errorObject.setTimestamp(Date.valueOf(java.time.LocalDate.now()));
+        errorObject.setTimestamp(new Date());
 
         return new ResponseEntity<>(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -4,7 +4,7 @@ import com.aronno.culinarycompass.entity.meal.Ingredient;
 import com.aronno.culinarycompass.entity.status.History;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ public class Meal {
     private Status status;
 
     @OneToMany(mappedBy = "entityId")
-    @Where(clause = "entityType = 'MEAL'")
+    @SQLRestriction("entityType = 'MEAL'")
     @OrderBy("createdAt DESC")
     private Set<History> statusHistory;
 }
