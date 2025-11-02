@@ -48,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
-        if (user.getPassword() == null || user.getPassword().isBlank()) {
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         User createdUser = userService.createUser(user);

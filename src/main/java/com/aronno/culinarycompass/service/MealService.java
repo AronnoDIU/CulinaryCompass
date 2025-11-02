@@ -64,6 +64,7 @@ public class MealService {
         
         BigDecimal totalCost = meal.getIngredients().stream()
             .map(Ingredient::getPrice)
+            .filter(price -> price != null)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         meal.setTotalCost(totalCost);
